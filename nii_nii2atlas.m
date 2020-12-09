@@ -1,20 +1,30 @@
-function nii_nii2atlas(source)
+function nii_nii2atlas(source, lutname)
 %convert NIfTI atlas to MZ3 atlas
 % source : indexed NIfTI atlas
 
 %if isempty(which('fileUtils.obj.readObj')), error('Please install MRIcroS https://github.com/bonilhamusclab/MRIcroS'); end;
 if ~exist('source','var') %atlas not specified
- [file,path] = uigetfile('*.nii;*.nii.gz');
+ [file,path] = uigetfile('*.nii;*.nii.gz', 'Select a NIfTI atlas');
  if isnumeric(file), return; end
  source = fullfile(path,file);
 end
+if ~exist(source, 'file')
+    return;
+end
+if ~exist('lutname','var')
+ [file,path] = uigetfile('*.lut', '(optional) select an ImageJ-format color table');
+ lutname = fullfile(path,file);
+end
+if ~exist(lutname, 'file')
+    fprintf('Using default color table\n');
+end     
 if isempty(which('spm'))
     error('Please get spm and add to your path'); 
 end
 if isempty(which('nii_reslice_target'))
     error('Please get spmScripts from GitHub and add to your path'); 
 end
-lutname = '';
+
 prefix = '';
 reduce = 0.5;
 interp = 4; %interpolation
